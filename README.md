@@ -1,10 +1,12 @@
 # Pons SDK
 
-A TypeScript SDK for reading and integrating with Pons on Robinhood Chain.
+TypeScript SDK for Pons on Robinhood Chain. Read token launches, factory contracts, and `TokenLaunched` events with typed [viem](https://viem.sh) queries.
 
-Pons SDK provides typed access to Pons contracts, launches, and on-chain events.
+Site: [casatrickdev.github.io/pons-sdk](https://casatrickdev.github.io/pons-sdk/)
 
 This package is read-only. It does not sign transactions, hold keys, or execute trades.
+
+This is a client for Pons on Robinhood Chain. It is not [Pons Network](https://pons.sh/) (`@pons-network/pons.js`) or the [Pons microkernel SDK](https://jsr.io/@pons/sdk).
 
 ## Features
 
@@ -177,3 +179,7 @@ This milestone is data infrastructure only.
 - No wallet custody
 
 On-chain values stay as `bigint` / addresses. The SDK does not convert token amounts to floating-point numbers.
+
+## License
+
+[MIT](./LICENSE)

@@ -1,7 +1,7 @@
 {
   "name": "pons-sdk",
   "version": "0.1.0",
-  "description": "A TypeScript SDK for reading and integrating with Pons on Robinhood Chain.",
+  "description": "TypeScript SDK for reading Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -33,6 +33,8 @@
     "robinhood",
     "robinhood-chain",
     "token-launch",
+    "launchpad",
+    "factory",
     "defi",
     "evm",
     "typescript",
@@ -45,7 +47,7 @@
     "type": "git",
     "url": "git+https://github.com/casatrickdev/pons-sdk.git"
   },
-  "homepage": "https://github.com/casatrickdev/pons-sdk#readme",
+  "homepage": "https://casatrickdev.github.io/pons-sdk/",
   "bugs": {
     "url": "https://github.com/casatrickdev/pons-sdk/issues"
   },

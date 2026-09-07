@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pons SDK | TypeScript client for Pons on Robinhood Chain</title>
+    <meta
+      name="description"
+      content="TypeScript SDK for reading Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain. Read-only. Built on viem."
+    />
+    <meta
+      name="keywords"
+      content="Pons SDK, Robinhood Chain, token launches, TokenLaunched, TypeScript, viem, factory, launchpad"
+    />
+    <link rel="canonical" href="https://casatrickdev.github.io/pons-sdk/" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Pons SDK" />
+    <meta property="og:title" content="Pons SDK | TypeScript client for Pons on Robinhood Chain" />
+    <meta
+      property="og:description"
+      content="Read Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain."
+    />
+    <meta property="og:url" content="https://casatrickdev.github.io/pons-sdk/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Pons SDK | TypeScript client for Pons on Robinhood Chain" />
+    <meta
+      name="twitter:description"
+      content="Read Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "Pons SDK",
+        "description": "TypeScript SDK for reading Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain.",
+        "url": "https://casatrickdev.github.io/pons-sdk/",
+        "codeRepository": "https://github.com/casatrickdev/pons-sdk",
+        "programmingLanguage": "TypeScript",
+        "runtimePlatform": "Node.js",
+        "license": "https://opensource.org/licenses/MIT"
+      }
+    </script>
+  </head>
+  <body>
+    <header class="wrap site-header">
+      <a class="brand" href="./">Pons SDK</a>
+      <nav class="nav" aria-label="Primary">
+        <a href="https://github.com/casatrickdev/pons-sdk">GitHub</a>
+        <a href="https://github.com/casatrickdev/pons-sdk#readme">Docs</a>
+      </nav>
+    </header>
+
+    <main class="wrap">
+      <p class="kicker">Robinhood Chain</p>
+      <h1>Read Pons launches in TypeScript.</h1>
+      <p class="lede">
+        Typed access to Pons factory contracts, token launches, and
+        <code>TokenLaunched</code> events. Built on viem. Node.js 20+.
+      </p>
+      <p class="note">
+        This package is read-only. It does not sign transactions, hold keys, or execute trades. It
+        is a client for Pons on Robinhood Chain, not
+        <a href="https://pons.sh/">Pons Network</a> or the
+        <a href="https://jsr.io/@pons/sdk">Pons microkernel SDK</a>.
+      </p>
+      <div class="actions">
+        <a class="button button-primary" href="https://github.com/casatrickdev/pons-sdk">
+          View on GitHub
+        </a>
+        <a class="button button-secondary" href="https://github.com/casatrickdev/pons-sdk#readme">
+          Read the README
+        </a>
+      </div>
+
+      <div class="grid">
+        <section class="card" aria-labelledby="install-heading">
+          <h2 id="install-heading">Install</h2>
+          <pre><code>pnpm add pons-sdk</code></pre>
+        </section>
+        <section class="card" aria-labelledby="quickstart-heading">
+          <h2 id="quickstart-heading">Quickstart</h2>
+          <pre><code>import { PonsClient } from "pons-sdk";
+
+const pons = new PonsClient();
+const launches = await pons.getLaunches({
+  fromBlock: 8_991_118n,
+  toBlock: "latest",
+});</code></pre>
+        </section>
+      </div>
+
+      <h2>Features</h2>
+      <ul class="features">
+        <li>Robinhood Chain support</li>
+        <li>V1 and V2 factory reads</li>
+        <li>Launch discovery</li>
+        <li>TokenLaunched decoding</li>
+        <li>Safe block-range queries</li>
+        <li>Read-only integration</li>
+      </ul>
+    </main>
+
+    <footer class="wrap site-footer">
+      <span>MIT License</span>
+      <a href="https://github.com/casatrickdev/pons-sdk">casatrickdev/pons-sdk</a>
+    </footer>
+  </body>
+</html>
