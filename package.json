@@ -30,11 +30,25 @@
   },
   "keywords": [
     "pons",
+    "robinhood",
     "robinhood-chain",
+    "token-launch",
+    "defi",
+    "evm",
+    "typescript",
     "web3",
     "viem",
     "sdk"
   ],
+  "author": "casatrickdev <uwnjvtrp224@outlook.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/casatrickdev/pons-sdk.git"
+  },
+  "homepage": "https://github.com/casatrickdev/pons-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/casatrickdev/pons-sdk/issues"
+  },
   "license": "MIT",
   "packageManager": "pnpm@10.15.1",
   "dependencies": {
