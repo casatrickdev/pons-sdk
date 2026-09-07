@@ -4,6 +4,8 @@ TypeScript SDK for Pons on Robinhood Chain. Read token launches, factory contrac
 
 Site: [casatrickdev.github.io/pons-sdk](https://casatrickdev.github.io/pons-sdk/)
 
+Write-up: [Pons SDK on Robinhood Chain](https://casatrick.substack.com/p/pons-sdk-robinhood-chain)
+
 This package is read-only. It does not sign transactions, hold keys, or execute trades.
 
 This is a client for Pons on Robinhood Chain. It is not [Pons Network](https://pons.sh/) (`@pons-network/pons.js`) or the [Pons microkernel SDK](https://jsr.io/@pons/sdk).
@@ -129,6 +131,34 @@ Contract addresses and event signatures come from the official Pons documentatio
 | V2         | Factory        | `0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e` | —           |
 
 The official PONS reference token (`0x39dBED3a2bd333467115dE45665cC57F813C4571`) was launched through the V1 legacy factory. Use `includeLegacy: true` when you need that history.
+
+## Milestone 1
+
+Milestone 1 is the read-only data layer: connect to Robinhood Chain, talk to the official Pons V1 and V2 factories, and turn real `TokenLaunched` logs into typed objects.
+
+```text
+Robinhood Chain
+      ↓
+Pons Contracts
+      ↓
+Onchain Events
+      ↓
+Typed SDK
+```
+
+Shipped in this milestone:
+
+- Robinhood Chain client and public RPC
+- Pons V1 / V2 factory addresses and ABI fragments
+- Live contract reads (`getLaunchedToken`, `canLaunch`, graduation status)
+- `TokenLaunched` decoding against real onchain logs
+- Chunked `getLogs` with merge, dedupe, and sort
+- Launch queries (`getLaunches`, `getLaunch`)
+- 30 unit tests and 3 live RPC integration tests
+
+The next milestone is persistent state: an indexer over `TokenLaunched`, then queryable history.
+
+Full write-up: [Building a Pons SDK on Robinhood Chain](https://casatrick.substack.com/p/pons-sdk-robinhood-chain).
 
 ## Roadmap
 
