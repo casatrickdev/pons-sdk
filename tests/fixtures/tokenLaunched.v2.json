@@ -1,0 +1,19 @@
+{
+  "source": "Live Pons V2 TokenLaunched log from PonsV2LaunchFactory 0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e on Robinhood Chain. Retrieved via eth_getLogs on https://rpc.mainnet.chain.robinhood.com. Event signature matches official Pons V2 documentation and PonsV2LaunchFactory.sol.",
+  "log": {
+    "address": "0x7ed598bcef8bd9edd8c97a195c6d13f40801ec7e",
+    "topics": [
+      "0x8d4aad4953d0ca700d468f3753aa14432d1b35b43ec6409f051fb6aa43a89607",
+      "0x000000000000000000000000d79cf52064e226e888780643fa219ac9f8058678",
+      "0x000000000000000000000000b43601ab09865cb9e79df22fdee5d277f0662e10",
+      "0x0000000000000000000000001e22c0e86399837d5c07a39eafe62e3581ab6503"
+    ],
+    "data": "0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003a4965bf58a40000",
+    "blockNumber": "0x35414e7",
+    "transactionHash": "0xe03185378e0d444f072c3e3f79ce1aac77566fa96abf0e17779d62491cb5ac47",
+    "transactionIndex": "0x7",
+    "blockHash": "0x099b4ead1b5d590aee7c0857703bca0e5d2191459dc72ae6d15e59df2606d9d2",
+    "logIndex": "0x20",
+    "removed": false
+  }
+}

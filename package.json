@@ -1,0 +1,54 @@
+{
+  "name": "pons-sdk",
+  "version": "0.1.0",
+  "description": "A TypeScript SDK for reading and integrating with Pons on Robinhood Chain.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "example:launches": "tsx examples/read-launches.ts"
+  },
+  "keywords": [
+    "pons",
+    "robinhood-chain",
+    "web3",
+    "viem",
+    "sdk"
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@10.15.1",
+  "dependencies": {
+    "viem": "^2.38.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.5.2",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.44.1",
+    "vitest": "^3.2.4"
+  }
+}

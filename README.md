@@ -1,0 +1,179 @@
+# Pons SDK
+
+A TypeScript SDK for reading and integrating with Pons on Robinhood Chain.
+
+Pons SDK provides typed access to Pons contracts, launches, and on-chain events.
+
+This package is read-only. It does not sign transactions, hold keys, or execute trades.
+
+## Features
+
+- Robinhood Chain support
+- Pons contract interaction
+- Launch discovery
+- `TokenLaunched` event decoding
+- typed blockchain data
+- safe block-range querying
+- read-only integration
+
+## Installation
+
+```bash
+pnpm add pons-sdk
+```
+
+Peer runtime: Node.js 20+ and [viem](https://viem.sh).
+
+## Quickstart
+
+```ts
+import { PonsClient } from "pons-sdk";
+
+const pons = new PonsClient();
+
+const launches = await pons.getLaunches({
+  fromBlock: 8_991_118n,
+  toBlock: "latest",
+});
+
+for (const launch of launches.slice(0, 10)) {
+  console.log(launch);
+}
+```
+
+The public Robinhood Chain RPC times out on wide `eth_getLogs` ranges. The SDK splits requests into bounded chunks (2,000 blocks by default). A full backfill from the V1 start block still takes time against the public endpoint; prefer a tighter `toBlock` while developing.
+
+Override the RPC when you have a dedicated provider:
+
+```ts
+const pons = new PonsClient({
+  rpcUrl: "https://your-robinhood-rpc.example",
+});
+```
+
+## Reading a launch
+
+```ts
+import { PONS_REFERENCE, PonsClient } from "pons-sdk";
+
+const pons = new PonsClient();
+
+const launch = await pons.getLaunch(PONS_REFERENCE.token, {
+  version: "v1",
+  includeLegacy: true,
+});
+
+const graduation = await pons.getGraduationStatus(PONS_REFERENCE.token, {
+  includeLegacy: true,
+});
+```
+
+V1 and V2 factories have different `TokenLaunched` ABIs and different `getLaunchedToken` records. The SDK models them as separate types instead of collapsing incompatible fields.
+
+```ts
+const v2Launches = await pons.getLaunches({
+  fromBlock: 55_400_000n,
+  toBlock: "latest",
+  version: "v2",
+});
+
+const canLaunch = await pons.canLaunch("0x...");
+```
+
+## Event filtering
+
+`token` and `deployer` are indexed on both factory generations and can be passed through to `eth_getLogs`:
+
+```ts
+const launches = await pons.getLaunches({
+  fromBlock: 8_991_118n,
+  toBlock: 8_993_118n,
+  token: "0x39dBED3a2bd333467115dE45665cC57F813C4571",
+});
+```
+
+`pool` is not an indexed `TokenLaunched` argument on V1, and V2 has no pool field on that event. The SDK does not pretend those filters exist at the RPC layer.
+
+## Architecture
+
+```text
+Robinhood Chain
+      ↓
+Pons Contracts
+      ↓
+Events
+      ↓
+Pons SDK
+      ↓
+Future Indexer / Analytics / Scanner
+```
+
+| Layer        | Responsibility                                          |
+| ------------ | ------------------------------------------------------- |
+| `chain/`     | Robinhood Chain definition and default public RPC       |
+| `contracts/` | Official factory addresses and verified ABI fragments   |
+| `events/`    | Block-range chunking, log fetch, `TokenLaunched` decode |
+| `launches/`  | Normalized launch objects and verified contract reads   |
+| `client/`    | Developer-facing `PonsClient`                           |
+
+Contract addresses and event signatures come from the official Pons documentation and the [ponsdotdev/ponsfamily](https://github.com/ponsdotdev/ponsfamily) repository. They are not invented and are not taken from a third-party SDK.
+
+## Contracts
+
+| Generation | Role           | Address                                      | Start block |
+| ---------- | -------------- | -------------------------------------------- | ----------- |
+| V1         | Active factory | `0xA5aAb3F0c6EeadF30Ef1D3Eb997108E976351feB` | 8,991,118   |
+| V1         | Legacy factory | `0x0c37a24F5D23A486FA692d1500881d698B1F77a4` | 8,600,612   |
+| V2         | Factory        | `0x7eD598BcEf8bd9Edd8C97A195C6d13f40801EC7e` | —           |
+
+The official PONS reference token (`0x39dBED3a2bd333467115dE45665cC57F813C4571`) was launched through the V1 legacy factory. Use `includeLegacy: true` when you need that history.
+
+## Roadmap
+
+```text
+[x] Robinhood Chain client
+[x] Contract configuration
+[x] TokenLaunched event decoding
+[x] Launch querying
+
+[ ] Token state
+[ ] Swap event indexing
+[ ] Historical indexer
+[ ] Real-time event stream
+[ ] Token analytics
+[ ] Scanner
+[ ] Trading integrations
+```
+
+## Development
+
+```bash
+pnpm install
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+Read-only integration tests hit the public Robinhood Chain RPC and never require a wallet:
+
+```bash
+pnpm test:integration
+```
+
+Run the example:
+
+```bash
+pnpm example:launches
+```
+
+## Safety
+
+This milestone is data infrastructure only.
+
+- No private-key handling
+- No transaction signing
+- No trading, sniping, or copy-trading
+- No wallet custody
+
+On-chain values stay as `bigint` / addresses. The SDK does not convert token amounts to floating-point numbers.
