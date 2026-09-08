@@ -96,6 +96,19 @@ export class PonsClient {
     }
   }
 
+  async getBlockTimestamp(blockNumber: bigint): Promise<bigint> {
+    try {
+      const block = await this.publicClient.getBlock({ blockNumber });
+      return block.timestamp;
+    } catch (error) {
+      throw new PonsRpcError(`RPC call failed during getBlockTimestamp: ${errorMessage(error)}`, {
+        operation: "getBlockTimestamp",
+        chainId: this.chainId,
+        cause: error,
+      });
+    }
+  }
+
   async getLaunches(params: GetLaunchesParams): Promise<PonsLaunch[]> {
     return queryLaunches(params, this.queryContext());
   }

@@ -23,6 +23,10 @@ export { PonsConfigError, PonsContractError, PonsError, PonsRpcError } from "./e
 export { decodeTokenLaunched, dedupeAndSortLaunches } from "./events/decodeTokenLaunched.js";
 export { DEFAULT_LOG_CHUNK_SIZE, splitBlockRange } from "./events/blockRange.js";
 export { PONS_V2_GRADUATION_PHASE, PONS_V2_GRADUATION_PHASE_NAME } from "./types/launch.js";
+export { PonsIndexer } from "./indexer/PonsIndexer.js";
+export { PONS_TOKEN_LAUNCHED_STATE_NAME } from "./indexer/types.js";
+export { launchEventIdentity, uniqueLaunches } from "./indexer/dedupe.js";
+export { PonsDatabase } from "./storage/Database.js";
 
 export type { PonsClientConfig, PonsDebugFn } from "./types/config.js";
 export type { NormalizedTokenLaunchedLog, TokenLaunchedLogInput } from "./types/event.js";
@@ -44,3 +48,14 @@ export type {
   PonsV2LaunchedToken,
 } from "./types/launch.js";
 export type { AddressString } from "./types/token.js";
+export type {
+  IndexedLaunch,
+  IndexedLaunchQuery,
+  PonsIndexerConfig,
+  PonsIndexerProgressEvent,
+  PonsIndexerProgressFn,
+  PonsIndexerSyncParams,
+  PonsIndexerSyncResult,
+  PonsIndexerSyncStatus,
+  PonsLaunchSource,
+} from "./indexer/types.js";

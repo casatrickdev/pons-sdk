@@ -26,7 +26,9 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "example:launches": "tsx examples/read-launches.ts"
+    "example:launches": "tsx examples/read-launches.ts",
+    "indexer:sync": "tsx examples/indexer-sync.ts",
+    "indexer:latest": "tsx examples/indexer-latest.ts"
   },
   "keywords": [
     "pons",
@@ -54,10 +56,12 @@
   "license": "MIT",
   "packageManager": "pnpm@10.15.1",
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
     "viem": "^2.38.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^24.5.2",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",

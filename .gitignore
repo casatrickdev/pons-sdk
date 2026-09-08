@@ -5,3 +5,6 @@ coverage
 .DS_Store
 .idea
 .vscode
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

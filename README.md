@@ -109,7 +109,9 @@ Events
       ↓
 Pons SDK
       ↓
-Future Indexer / Analytics / Scanner
+Historical Indexer / SQLite
+      ↓
+Future Analytics / Scanner
 ```
 
 | Layer        | Responsibility                                          |
@@ -119,6 +121,8 @@ Future Indexer / Analytics / Scanner
 | `events/`    | Block-range chunking, log fetch, `TokenLaunched` decode |
 | `launches/`  | Normalized launch objects and verified contract reads   |
 | `client/`    | Developer-facing `PonsClient`                           |
+| `indexer/`   | Historical `TokenLaunched` sync, cursor, and queries    |
+| `storage/`   | SQLite schema and launch persistence                    |
 
 Contract addresses and event signatures come from the official Pons documentation and the [ponsdotdev/ponsfamily](https://github.com/ponsdotdev/ponsfamily) repository. They are not invented and are not taken from a third-party SDK.
 
@@ -156,25 +160,76 @@ Shipped in this milestone:
 - Launch queries (`getLaunches`, `getLaunch`)
 - 30 unit tests and 3 live RPC integration tests
 
-The next milestone is persistent state: an indexer over `TokenLaunched`, then queryable history.
+The next milestone after this read layer is persistent historical state. Milestone 2 (the SQLite indexer) is included in this package.
 
 Full write-up: [Building a Pons SDK on Robinhood Chain](https://casatrick.substack.com/p/pons-sdk-robinhood-chain).
+
+## Historical Indexer
+
+Milestone 2 turns decoded `TokenLaunched` events into local, queryable history.
+
+```text
+Pons contracts
+      ↓
+TokenLaunched events
+      ↓
+Pons SDK
+      ↓
+Historical indexer
+      ↓
+SQLite
+      ↓
+Queryable launches
+```
+
+The indexer uses the SDK's `getLaunches()` and `splitBlockRange()` helpers. It does not send transactions. Blockchain integers are stored as decimal strings.
+
+Re-processing the same block range does not create duplicate events. Identity is `transactionHash + logIndex`, enforced by a SQLite unique constraint. The indexer can safely replay a range. It does not unwind chain reorganizations.
+
+```ts
+import { PonsClient, PonsDatabase, PonsIndexer } from "pons-sdk";
+
+const indexer = new PonsIndexer({
+  client: new PonsClient(),
+  database: new PonsDatabase("pons-indexer.sqlite"),
+});
+
+await indexer.sync({
+  fromBlock: 8_963_000n,
+  toBlock: 8_965_000n,
+});
+
+const launches = indexer.getLatestLaunches(20);
+```
+
+Resume after a stop by omitting `fromBlock`. The cursor only advances after the chunk is committed.
+
+```bash
+pnpm indexer:sync --from 8963000 --to 8965000
+pnpm indexer:latest
+```
 
 ## Roadmap
 
 ```text
 [x] Robinhood Chain client
-[x] Contract configuration
-[x] TokenLaunched event decoding
-[x] Launch querying
+[x] Pons V1/V2 contracts
+[x] Contract reads
+[x] TokenLaunched decoding
+[x] Chunked event queries
+[x] Launch queries
+[x] Unit tests
+[x] Live integration tests
 
-[ ] Token state
-[ ] Swap event indexing
-[ ] Historical indexer
+[x] Historical TokenLaunched indexer
+[x] Persistent launch state
 [ ] Real-time event stream
-[ ] Token analytics
+[ ] Swap indexing
+[ ] Token state
+[ ] Market analytics
 [ ] Scanner
-[ ] Trading integrations
+[ ] Strategy research
+[ ] Trading integration
 ```
 
 ## Development
@@ -197,11 +252,13 @@ Run the example:
 
 ```bash
 pnpm example:launches
+pnpm indexer:sync --from 8963000 --to 8965000
+pnpm indexer:latest
 ```
 
 ## Safety
 
-This milestone is data infrastructure only.
+This package is data infrastructure only.
 
 - No private-key handling
 - No transaction signing
