@@ -252,6 +252,8 @@ console.log(engine.explain(signal));
 
 Signals use a deterministic id: `transactionHash + logIndex`.
 
+Real trading is not implemented. If it is added later, do not use the public Robinhood Chain RPC (`https://rpc.mainnet.chain.robinhood.com`). Live reads and execution need a dedicated paid RPC such as [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/), passed as `rpcUrl` on `PonsClient`.
+
 ## Roadmap
 
 ```text
@@ -310,6 +312,7 @@ This package is data infrastructure and copy-trading research only.
 - No live copy-trading, sniping, or execution
 - No wallet custody
 - The execution adapter is a no-op and cannot be armed with an environment flag
+- Real trading, if ever enabled, requires a paid RPC (Alchemy or QuickNode), not the public endpoint
 
 On-chain values stay as `bigint` / addresses. The SDK does not convert token amounts to floating-point numbers.
 
