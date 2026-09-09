@@ -209,27 +209,72 @@ pnpm indexer:sync --from 8963000 --to 8965000
 pnpm indexer:latest
 ```
 
+## Copy-Trading Research
+
+This module is currently research-only. It detects and evaluates wallet activity but does not execute trades.
+
+There is no Pons swap indexer yet. The pipeline consumes **normalized** `WalletActivity` objects. Until swap events are indexed, tests use explicitly labeled synthetic domain fixtures plus real token addresses from Robinhood Chain.
+
+```text
+Pons Events
+     ↓
+Indexer
+     ↓
+Wallet Activity
+     ↓
+Trade Detector
+     ↓
+Filter
+     ↓
+Risk
+     ↓
+Copy-Trade Signal
+     ↓
+Execution Adapter (disabled)
+```
+
+```ts
+import { CopyTradeEngine } from "pons-sdk";
+
+const engine = new CopyTradeEngine({
+  mode: "research",
+  policy: {
+    allowedWallets: ["0x..."],
+    minTradeSize: 1n,
+  },
+});
+
+const signal = engine.process(activity);
+console.log(engine.explain(signal));
+```
+
+`mode` is `research` only. Constructing `live` throws. `engine.execute()` always throws `Live execution is disabled`. `NoopExecutionAdapter` returns `not_executed`.
+
+Signals use a deterministic id: `transactionHash + logIndex`.
+
 ## Roadmap
 
 ```text
 [x] Robinhood Chain client
 [x] Pons V1/V2 contracts
-[x] Contract reads
 [x] TokenLaunched decoding
-[x] Chunked event queries
-[x] Launch queries
-[x] Unit tests
-[x] Live integration tests
+[x] Historical launch queries
 
-[x] Historical TokenLaunched indexer
+[x] Historical launch indexer
 [x] Persistent launch state
+[x] Copy-trading domain architecture
+[x] Read-only signal pipeline
+
 [ ] Real-time event stream
 [ ] Swap indexing
-[ ] Token state
-[ ] Market analytics
+[ ] Wallet activity indexer
+[ ] Wallet intelligence
+[ ] Copy-trading backtesting
+[ ] Paper execution
+[ ] Real execution
+[ ] Bundler
+[ ] Sniper
 [ ] Scanner
-[ ] Strategy research
-[ ] Trading integration
 ```
 
 ## Development
@@ -258,12 +303,13 @@ pnpm indexer:latest
 
 ## Safety
 
-This package is data infrastructure only.
+This package is data infrastructure and copy-trading research only.
 
 - No private-key handling
 - No transaction signing
-- No trading, sniping, or copy-trading
+- No live copy-trading, sniping, or execution
 - No wallet custody
+- The execution adapter is a no-op and cannot be armed with an environment flag
 
 On-chain values stay as `bigint` / addresses. The SDK does not convert token amounts to floating-point numbers.
 

@@ -35,4 +35,32 @@ CREATE TABLE IF NOT EXISTS indexer_state (
   name TEXT PRIMARY KEY,
   last_processed_block TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS watched_wallets (
+  address TEXT PRIMARY KEY,
+  label TEXT,
+  enabled INTEGER NOT NULL CHECK (enabled IN (0, 1)),
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS wallet_activity (
+  id INTEGER PRIMARY KEY,
+  wallet TEXT NOT NULL,
+  token_address TEXT NOT NULL,
+  pool_address TEXT,
+  side TEXT NOT NULL CHECK (side IN ('buy', 'sell')),
+  amount_token TEXT,
+  amount_quote TEXT,
+  block_number TEXT NOT NULL,
+  transaction_hash TEXT NOT NULL,
+  log_index TEXT NOT NULL,
+  timestamp TEXT,
+  source TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  UNIQUE (transaction_hash, log_index)
+);
+
+CREATE INDEX IF NOT EXISTS wallet_activity_wallet ON wallet_activity (wallet);
+CREATE INDEX IF NOT EXISTS wallet_activity_token ON wallet_activity (token_address);
+CREATE INDEX IF NOT EXISTS wallet_activity_block ON wallet_activity (block_number, log_index);
 `;

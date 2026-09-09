@@ -27,6 +27,20 @@ export { PonsIndexer } from "./indexer/PonsIndexer.js";
 export { PONS_TOKEN_LAUNCHED_STATE_NAME } from "./indexer/types.js";
 export { launchEventIdentity, uniqueLaunches } from "./indexer/dedupe.js";
 export { PonsDatabase } from "./storage/Database.js";
+export { normalizeWalletActivity, walletActivityIdentity } from "./wallets/WalletActivity.js";
+export { buildWalletState } from "./wallets/WalletState.js";
+export { WalletRepository } from "./wallets/WalletRepository.js";
+export { CopyTradeEngine, LIVE_EXECUTION_DISABLED } from "./copyTrading/CopyTradeEngine.js";
+export { TradeDetector } from "./copyTrading/TradeDetector.js";
+export { TradeFilter } from "./copyTrading/TradeFilter.js";
+export { RiskEvaluator } from "./copyTrading/RiskEvaluator.js";
+export { SignalBuilder } from "./copyTrading/SignalBuilder.js";
+export { formatCopyTradeExplanation } from "./copyTrading/explain.js";
+export { copyTradeSignalId } from "./copyTrading/types.js";
+export {
+  NoopExecutionAdapter,
+  RESEARCH_EXECUTION_DISABLED,
+} from "./execution/NoopExecutionAdapter.js";
 
 export type { PonsClientConfig, PonsDebugFn } from "./types/config.js";
 export type { NormalizedTokenLaunchedLog, TokenLaunchedLogInput } from "./types/event.js";
@@ -59,3 +73,27 @@ export type {
   PonsIndexerSyncStatus,
   PonsLaunchSource,
 } from "./indexer/types.js";
+export type {
+  TradeSide,
+  WalletActivity,
+  WalletActivityQuery,
+  WalletActivitySource,
+  WalletActivityInput,
+  WalletPosition,
+  WalletState,
+  WatchedWallet,
+} from "./wallets/types.js";
+export type {
+  CopyTradeFilterConfig,
+  CopyTradeMode,
+  CopyTradePolicy,
+  CopyTradeSignal,
+  CopyTradeSignalStatus,
+  LayerDecision,
+  RiskContext,
+  TradeCandidate,
+  TradeDetection,
+} from "./copyTrading/types.js";
+export type { CopyTradeEngineConfig } from "./copyTrading/CopyTradeEngine.js";
+export type { ExecutionAdapter } from "./execution/ExecutionAdapter.js";
+export type { ExecutionResult } from "./execution/types.js";
