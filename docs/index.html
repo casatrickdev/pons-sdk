@@ -3,31 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pons SDK | TypeScript client for Pons on Robinhood Chain</title>
+    <title>
+      Pons SDK | Robinhood copy trading bot, sniper bot, bundler, and trading tools
+    </title>
     <meta
       name="description"
-      content="TypeScript SDK for Pons token launches on Robinhood Chain. Read-only client, historical indexer, and copy-trading research — no live execution."
+      content="Robinhood Chain trading tools for Pons: TypeScript SDK, historical indexer, and Robinhood copy trading bot research. Robinhood sniper bot and Robinhood bundler are on the roadmap. No live execution."
     />
     <meta
       name="keywords"
-      content="Pons SDK, Robinhood Chain, token launches, TokenLaunched, TypeScript, viem, indexer, copy-trading research"
+      content="Robinhood copy trading bot, Robinhood sniper bot, Robinhood bundler, Robinhood trading tools, Pons SDK, Robinhood Chain, TokenLaunched, TypeScript"
     />
     <link rel="canonical" href="https://casatrickdev.github.io/pons-sdk/" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Pons SDK" />
-    <meta property="og:title" content="Pons SDK | TypeScript client for Pons on Robinhood Chain" />
+    <meta
+      property="og:title"
+      content="Pons SDK | Robinhood copy trading bot, sniper bot, bundler, and trading tools"
+    />
     <meta
       property="og:description"
-      content="Read-only TypeScript SDK for Pons on Robinhood Chain, with a historical indexer and copy-trading research. No live execution."
+      content="Open-source Robinhood Chain trading tools for Pons. Copy trading bot research is live in the repo. Sniper bot and bundler are planned. No live execution."
     />
     <meta property="og:url" content="https://casatrickdev.github.io/pons-sdk/" />
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Pons SDK | TypeScript client for Pons on Robinhood Chain" />
+    <meta
+      name="twitter:title"
+      content="Pons SDK | Robinhood copy trading bot, sniper bot, bundler, and trading tools"
+    />
     <meta
       name="twitter:description"
-      content="Read-only TypeScript SDK for Pons on Robinhood Chain, with a historical indexer and copy-trading research. No live execution."
+      content="Open-source Robinhood Chain trading tools for Pons. Copy trading bot research is live in the repo. Sniper bot and bundler are planned. No live execution."
     />
     <link rel="stylesheet" href="./styles.css" />
     <script type="application/ld+json">
@@ -35,12 +43,26 @@
         "@context": "https://schema.org",
         "@type": "SoftwareSourceCode",
         "name": "Pons SDK",
-        "description": "TypeScript SDK for Pons token launches on Robinhood Chain. Read-only client, historical indexer, and copy-trading research — no live execution.",
+        "alternateName": [
+          "Robinhood copy trading bot",
+          "Robinhood sniper bot",
+          "Robinhood bundler",
+          "Robinhood trading tools"
+        ],
+        "description": "Robinhood Chain trading tools for Pons: TypeScript SDK, historical indexer, and copy-trading bot research. Sniper bot and bundler are on the roadmap. No live execution.",
         "url": "https://casatrickdev.github.io/pons-sdk/",
         "codeRepository": "https://github.com/casatrickdev/pons-sdk",
         "programmingLanguage": "TypeScript",
         "runtimePlatform": "Node.js",
-        "license": "https://opensource.org/licenses/MIT"
+        "license": "https://opensource.org/licenses/MIT",
+        "keywords": [
+          "Robinhood copy trading bot",
+          "Robinhood sniper bot",
+          "Robinhood bundler",
+          "Robinhood trading tools",
+          "Pons SDK",
+          "Robinhood Chain"
+        ]
       }
     </script>
   </head>
@@ -55,16 +77,17 @@
     </header>
 
     <main class="wrap">
-      <p class="kicker">Robinhood Chain</p>
-      <h1>Read Pons launches in TypeScript.</h1>
+      <p class="kicker">Robinhood Chain trading tools</p>
+      <h1>Robinhood copy trading, sniper, bundler, and Pons trading tools.</h1>
       <p class="lede">
-        Typed access to Pons factory contracts, token launches, and
-        <code>TokenLaunched</code> events. Historical SQLite indexer. Copy-trading research with
-        execution disabled. Built on viem. Node.js 20+.
+        Open-source TypeScript SDK for Pons on Robinhood Chain. Launch indexer, copy trading bot
+        research, and the data layer for a future Robinhood sniper bot and Robinhood bundler. Built
+        on viem. Node.js 20+.
       </p>
       <p class="note">
-        This package is read-only. It does not sign transactions, hold keys, or execute trades. It
-        is a client for Pons on Robinhood Chain, not
+        This package is read-only. It does not sign transactions, hold keys, or execute trades. The
+        Robinhood copy trading bot path is research-only. The Robinhood sniper bot and Robinhood
+        bundler are not implemented. This is a client for Pons on Robinhood Chain, not
         <a href="https://pons.sh/">Pons Network</a> or the
         <a href="https://jsr.io/@pons/sdk">Pons microkernel SDK</a>.
       </p>
@@ -100,13 +123,13 @@ const launches = await pons.getLaunches({
         </section>
       </div>
 
-      <h2>Features</h2>
+      <h2>Robinhood copy trading bot, sniper bot, and bundler</h2>
       <ul class="features">
-        <li>Robinhood Chain support</li>
-        <li>V1 and V2 factory reads</li>
-        <li>TokenLaunched decoding</li>
-        <li>Historical SQLite indexer</li>
-        <li>Copy-trading research pipeline</li>
+        <li>Robinhood copy trading bot research (no execution)</li>
+        <li>Robinhood sniper bot — planned, not live</li>
+        <li>Robinhood bundler — planned, not live</li>
+        <li>Robinhood trading tools: SDK + indexer</li>
+        <li>TokenLaunched decoding on Robinhood Chain</li>
         <li>Execution disabled</li>
       </ul>
     </main>

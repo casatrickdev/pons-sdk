@@ -1,6 +1,8 @@
 # Pons SDK
 
-TypeScript SDK for Pons on Robinhood Chain. Read token launches, factory contracts, and `TokenLaunched` events with typed [viem](https://viem.sh) queries.
+Robinhood Chain trading tools for Pons. TypeScript SDK for token launches, a historical indexer, and research for a Robinhood copy trading bot. A Robinhood sniper bot and Robinhood bundler are on the roadmap and are not live.
+
+Typed access to Pons factory contracts, token launches, and `TokenLaunched` events with [viem](https://viem.sh) queries.
 
 Site: [casatrickdev.github.io/pons-sdk](https://casatrickdev.github.io/pons-sdk/)
 
@@ -19,6 +21,8 @@ This is a client for Pons on Robinhood Chain. It is not [Pons Network](https://p
 - typed blockchain data
 - safe block-range querying
 - read-only integration
+- historical launch indexer
+- Robinhood copy trading bot research (no execution)
 
 ## Installation
 
@@ -251,6 +255,19 @@ console.log(engine.explain(signal));
 `mode` is `research` only. Constructing `live` throws. `engine.execute()` always throws `Live execution is disabled`. `NoopExecutionAdapter` returns `not_executed`.
 
 Signals use a deterministic id: `transactionHash + logIndex`.
+
+## Robinhood copy trading bot, sniper bot, and bundler
+
+This repo is the open-source foundation for Robinhood Chain trading tools:
+
+| Tool | Status |
+| ---- | ------ |
+| Robinhood copy trading bot | Research pipeline only. Detects and scores wallet activity. Does not copy trades. |
+| Robinhood sniper bot | Not implemented. Planned after swap indexing and a real-time event stream. |
+| Robinhood bundler | Not implemented. Planned after paper execution. |
+| Other Robinhood trading tools | Launch indexer and read-only SDK are available now. |
+
+Live copy-trading, sniping, bundling, and fund execution are disabled. There is no environment flag that turns them on.
 
 Real trading is not implemented. If it is added later, do not use the public Robinhood Chain RPC (`https://rpc.mainnet.chain.robinhood.com`). Live reads and execution need a dedicated paid RPC such as [Alchemy](https://www.alchemy.com/) or [QuickNode](https://www.quicknode.com/), passed as `rpcUrl` on `PonsClient`.
 

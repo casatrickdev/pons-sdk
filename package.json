@@ -1,7 +1,7 @@
 {
   "name": "pons-sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for reading Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain.",
+  "description": "Robinhood Chain trading tools for Pons: TypeScript SDK, historical indexer, and copy-trading bot research. Roadmap includes a Robinhood sniper bot and Robinhood bundler. Read-only — no live execution.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -42,7 +42,14 @@
     "typescript",
     "web3",
     "viem",
-    "sdk"
+    "sdk",
+    "robinhood-copy-trading",
+    "copy-trading-bot",
+    "robinhood-sniper",
+    "sniper-bot",
+    "robinhood-bundler",
+    "trading-bot",
+    "trading-tools"
   ],
   "author": "casatrickdev <uwnjvtrp224@outlook.com>",
   "repository": {
