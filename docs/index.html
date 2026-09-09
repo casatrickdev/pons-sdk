@@ -6,11 +6,11 @@
     <title>Pons SDK | TypeScript client for Pons on Robinhood Chain</title>
     <meta
       name="description"
-      content="TypeScript SDK for reading Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain. Read-only. Built on viem."
+      content="TypeScript SDK for Pons token launches on Robinhood Chain. Read-only client, historical indexer, and copy-trading research — no live execution."
     />
     <meta
       name="keywords"
-      content="Pons SDK, Robinhood Chain, token launches, TokenLaunched, TypeScript, viem, factory, launchpad"
+      content="Pons SDK, Robinhood Chain, token launches, TokenLaunched, TypeScript, viem, indexer, copy-trading research"
     />
     <link rel="canonical" href="https://casatrickdev.github.io/pons-sdk/" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
@@ -20,14 +20,14 @@
     <meta property="og:title" content="Pons SDK | TypeScript client for Pons on Robinhood Chain" />
     <meta
       property="og:description"
-      content="Read Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain."
+      content="Read-only TypeScript SDK for Pons on Robinhood Chain, with a historical indexer and copy-trading research. No live execution."
     />
     <meta property="og:url" content="https://casatrickdev.github.io/pons-sdk/" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Pons SDK | TypeScript client for Pons on Robinhood Chain" />
     <meta
       name="twitter:description"
-      content="Read Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain."
+      content="Read-only TypeScript SDK for Pons on Robinhood Chain, with a historical indexer and copy-trading research. No live execution."
     />
     <link rel="stylesheet" href="./styles.css" />
     <script type="application/ld+json">
@@ -35,7 +35,7 @@
         "@context": "https://schema.org",
         "@type": "SoftwareSourceCode",
         "name": "Pons SDK",
-        "description": "TypeScript SDK for reading Pons token launches, factory contracts, and TokenLaunched events on Robinhood Chain.",
+        "description": "TypeScript SDK for Pons token launches on Robinhood Chain. Read-only client, historical indexer, and copy-trading research — no live execution.",
         "url": "https://casatrickdev.github.io/pons-sdk/",
         "codeRepository": "https://github.com/casatrickdev/pons-sdk",
         "programmingLanguage": "TypeScript",
@@ -50,6 +50,7 @@
       <nav class="nav" aria-label="Primary">
         <a href="https://github.com/casatrickdev/pons-sdk">GitHub</a>
         <a href="https://github.com/casatrickdev/pons-sdk#readme">Docs</a>
+        <a href="https://casatrick.substack.com/p/pons-sdk-robinhood-chain">Write-up</a>
       </nav>
     </header>
 
@@ -58,13 +59,20 @@
       <h1>Read Pons launches in TypeScript.</h1>
       <p class="lede">
         Typed access to Pons factory contracts, token launches, and
-        <code>TokenLaunched</code> events. Built on viem. Node.js 20+.
+        <code>TokenLaunched</code> events. Historical SQLite indexer. Copy-trading research with
+        execution disabled. Built on viem. Node.js 20+.
       </p>
       <p class="note">
         This package is read-only. It does not sign transactions, hold keys, or execute trades. It
         is a client for Pons on Robinhood Chain, not
         <a href="https://pons.sh/">Pons Network</a> or the
         <a href="https://jsr.io/@pons/sdk">Pons microkernel SDK</a>.
+      </p>
+      <p class="note">
+        Real trading is not implemented. If it is added later, use a paid RPC such as
+        <a href="https://www.alchemy.com/">Alchemy</a> or
+        <a href="https://www.quicknode.com/">QuickNode</a> — not the public Robinhood Chain
+        endpoint.
       </p>
       <div class="actions">
         <a class="button button-primary" href="https://github.com/casatrickdev/pons-sdk">
@@ -96,10 +104,10 @@ const launches = await pons.getLaunches({
       <ul class="features">
         <li>Robinhood Chain support</li>
         <li>V1 and V2 factory reads</li>
-        <li>Launch discovery</li>
         <li>TokenLaunched decoding</li>
-        <li>Safe block-range queries</li>
-        <li>Read-only integration</li>
+        <li>Historical SQLite indexer</li>
+        <li>Copy-trading research pipeline</li>
+        <li>Execution disabled</li>
       </ul>
     </main>
 
