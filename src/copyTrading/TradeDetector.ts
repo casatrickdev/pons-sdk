@@ -22,7 +22,7 @@ export class TradeDetector {
 
       return {
         supported: true,
-        reasons: [`detected ${candidate.side} from wallet activity`],
+        reasons: ["valid trade"],
         candidate,
         activity: normalized,
       };

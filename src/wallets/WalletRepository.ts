@@ -109,7 +109,14 @@ export class WalletRepository {
     return result.changes;
   }
 
-  getActivity(query: WalletActivityQuery = {}): WalletActivity[] {
+  getActivity(wallet: string, options?: Omit<WalletActivityQuery, "wallet">): WalletActivity[];
+  getActivity(query?: WalletActivityQuery): WalletActivity[];
+  getActivity(
+    walletOrQuery: string | WalletActivityQuery = {},
+    options: Omit<WalletActivityQuery, "wallet"> = {},
+  ): WalletActivity[] {
+    const query: WalletActivityQuery =
+      typeof walletOrQuery === "string" ? { ...options, wallet: walletOrQuery } : walletOrQuery;
     const { sql, params } = this.buildFilter(query);
     const limitSql = query.limit === undefined ? "" : " LIMIT @limit";
     const rows = this.database.sqlite
@@ -126,7 +133,7 @@ export class WalletRepository {
     return rows.map(toActivity);
   }
 
-  getRecentActivity(wallet: string, limit: number): WalletActivity[] {
+  getRecentActivity(wallet: string, limit = 50): WalletActivity[] {
     const rows = this.database.sqlite
       .prepare(
         `
@@ -148,7 +155,7 @@ export class WalletRepository {
     return this.getActivity({ ...options, token });
   }
 
-  getLatestActivity(limit: number): WalletActivity[] {
+  getLatestActivity(limit = 50): WalletActivity[] {
     const rows = this.database.sqlite
       .prepare(
         `
@@ -304,3 +311,6 @@ export class WalletRepository {
     };
   }
 }
+
+/** Query layer over persisted normalized wallet activity. */
+export class WalletActivityRepository extends WalletRepository {}

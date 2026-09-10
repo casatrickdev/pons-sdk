@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { PONS_REFERENCE } from "../../src/contracts/addresses.js";
+import { PonsConfigError } from "../../src/errors/PonsError.js";
 import { PonsDatabase } from "../../src/storage/Database.js";
-import { WalletRepository } from "../../src/wallets/WalletRepository.js";
+import { WalletActivityRepository, WalletRepository } from "../../src/wallets/WalletRepository.js";
 import { buildWalletState } from "../../src/wallets/WalletState.js";
 import {
   SYNTHETIC_WATCHED_WALLET,
@@ -74,6 +75,24 @@ describe("wallet research storage", () => {
     wallets.removeWallet(SYNTHETIC_WATCHED_WALLET);
     expect(wallets.getWallet(SYNTHETIC_WATCHED_WALLET)).toBeUndefined();
     expect(wallets.listWallets()).toHaveLength(0);
+  });
+
+  it("rejects an invalid watchlist address", () => {
+    const wallets = repo();
+    expect(() => wallets.addWallet("0x123")).toThrow(PonsConfigError);
+    expect(() => wallets.addWallet("not-an-address")).toThrow(/Invalid address for wallet/);
+  });
+
+  it("queries activity by wallet through WalletActivityRepository", () => {
+    const database = new PonsDatabase(":memory:");
+    databases.push(database);
+    const activity = new WalletActivityRepository(database);
+    activity.insertActivity(syntheticBuyActivity);
+    activity.insertActivity(syntheticSellActivity);
+
+    expect(activity.getActivity(SYNTHETIC_WATCHED_WALLET)).toHaveLength(2);
+    expect(activity.getActivity(SYNTHETIC_WATCHED_WALLET, { limit: 1 })).toHaveLength(1);
+    expect(activity.getRecentActivity(SYNTHETIC_WATCHED_WALLET)[0]?.side).toBe("sell");
   });
 
   it("returns latest synthetic activity in descending block order", () => {

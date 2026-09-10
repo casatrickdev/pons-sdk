@@ -29,7 +29,7 @@ export { launchEventIdentity, uniqueLaunches } from "./indexer/dedupe.js";
 export { PonsDatabase } from "./storage/Database.js";
 export { normalizeWalletActivity, walletActivityIdentity } from "./wallets/WalletActivity.js";
 export { buildWalletState } from "./wallets/WalletState.js";
-export { WalletRepository } from "./wallets/WalletRepository.js";
+export { WalletActivityRepository, WalletRepository } from "./wallets/WalletRepository.js";
 export { CopyTradeEngine, LIVE_EXECUTION_DISABLED } from "./copyTrading/CopyTradeEngine.js";
 export { TradeDetector } from "./copyTrading/TradeDetector.js";
 export { TradeFilter } from "./copyTrading/TradeFilter.js";

@@ -20,9 +20,7 @@ export class SignalBuilder {
       blockNumber: candidate.blockNumber,
       createdAt: options.createdAt ?? new Date().toISOString(),
       status: approved ? "approved" : "rejected",
-      detectionReasons: options.detectionReasons ?? [
-        `detected ${candidate.side} from wallet activity`,
-      ],
+      detectionReasons: options.detectionReasons ?? ["valid trade"],
       filterReasons: filter.reasons,
       riskReasons: risk.reasons,
     };

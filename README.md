@@ -118,15 +118,18 @@ Historical Indexer / SQLite
 Future Analytics / Scanner
 ```
 
-| Layer        | Responsibility                                          |
-| ------------ | ------------------------------------------------------- |
-| `chain/`     | Robinhood Chain definition and default public RPC       |
-| `contracts/` | Official factory addresses and verified ABI fragments   |
-| `events/`    | Block-range chunking, log fetch, `TokenLaunched` decode |
-| `launches/`  | Normalized launch objects and verified contract reads   |
-| `client/`    | Developer-facing `PonsClient`                           |
-| `indexer/`   | Historical `TokenLaunched` sync, cursor, and queries    |
-| `storage/`   | SQLite schema and launch persistence                    |
+| Layer          | Responsibility                                                 |
+| -------------- | -------------------------------------------------------------- |
+| `chain/`       | Robinhood Chain definition and default public RPC              |
+| `contracts/`   | Official factory addresses and verified ABI fragments          |
+| `events/`      | Block-range chunking, log fetch, `TokenLaunched` decode        |
+| `launches/`    | Normalized launch objects and verified contract reads          |
+| `client/`      | Developer-facing `PonsClient`                                  |
+| `indexer/`     | Historical `TokenLaunched` sync, cursor, and queries           |
+| `storage/`     | SQLite schema and launch persistence                           |
+| `wallets/`     | Watchlist, normalized activity, wallet state (no invented PnL) |
+| `copyTrading/` | Research-only detector → filter → risk → signal pipeline       |
+| `execution/`   | `NoopExecutionAdapter` only; live execution is disabled        |
 
 Contract addresses and event signatures come from the official Pons documentation and the [ponsdotdev/ponsfamily](https://github.com/ponsdotdev/ponsfamily) repository. They are not invented and are not taken from a third-party SDK.
 
@@ -215,9 +218,9 @@ pnpm indexer:latest
 
 ## Copy-Trading Research
 
-This module detects and evaluates wallet activity but does not execute trades.
+This module is a research-only decision engine. It detects and evaluates wallet activity but does not execute trades.
 
-Copy-trade domain logic is tested against **normalized synthetic domain fixtures**. Real Pons wallet/swap ingestion will be connected when the indexer supports those events. Token addresses used in tests can still come from live Robinhood Chain reads.
+The copy-trading decision engine is implemented against normalized domain data. Real Pons wallet/swap ingestion is a subsequent integration milestone.
 
 ```text
 Pons Events
@@ -256,6 +259,27 @@ const signal = engine.process(activity);
 console.log(engine.explain(signal));
 ```
 
+## What this can become
+
+```text
+Current:
+Pons SDK
+Indexer
+Wallet watchlist + normalized activity
+Copy-trade research signals
+
+Future:
+Real-time monitoring
+Paper execution
+Live copy trading
+Scanner
+Bundler
+Sniper
+Additional Robinhood Chain launchpads
+```
+
+Wallet intelligence is not complete. Copy-trade signals are research-only. Sniper, bundler, and live copy trading are not products in this repository yet.
+
 ## Robinhood copy trading bot, sniper bot, and bundler
 
 This repo is the open-source foundation for Robinhood Chain trading tools:
@@ -288,8 +312,8 @@ Real trading is not implemented. If it is added later, do not use the public Rob
 [x] Read-only signal pipeline
 
 [ ] Real-time event stream
-[ ] Wallet activity indexing
-[ ] Wallet intelligence
+[ ] Wallet activity ingestion
+[ ] Real wallet intelligence
 [ ] Copy-trading backtesting
 [ ] Paper execution
 [ ] Live execution

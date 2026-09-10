@@ -16,7 +16,7 @@ import {
   SYNTHETIC_WATCHED_WALLET,
   syntheticBuyActivity,
   syntheticSellActivity,
-} from "../fixtures/walletActivity.synthetic.js";
+} from "../fixtures/synthetic-wallet-activity.js";
 
 const detector = new TradeDetector();
 
@@ -25,7 +25,7 @@ describe("TradeDetector", () => {
     const detection = detector.detect(syntheticBuyActivity);
     expect(detection.supported).toBe(true);
     expect(detection.candidate?.side).toBe("buy");
-    expect(detection.reasons[0]).toMatch(/detected buy/);
+    expect(detection.reasons).toEqual(["valid trade"]);
   });
 
   it("detects a synthetic sell candidate", () => {
@@ -76,6 +76,19 @@ describe("TradeFilter", () => {
       return;
     }
     expect(filter.evaluate(candidate).reasons).toContain("wallet not allowlisted");
+  });
+
+  it("approves an allowed token", () => {
+    const filter = new TradeFilter({ allowedTokens: [PONS_REFERENCE.token] });
+    const candidate = detector.detect(syntheticBuyActivity).candidate;
+    expect(candidate).toBeDefined();
+    if (candidate === undefined) {
+      return;
+    }
+    expect(filter.evaluate(candidate)).toEqual({
+      approved: true,
+      reasons: ["token allowed"],
+    });
   });
 
   it("rejects an excluded token", () => {
@@ -134,6 +147,16 @@ describe("RiskEvaluator", () => {
     expect(decision.reasons).toContain("exposure within limit");
   });
 
+  it("rejects when max position size is exceeded", () => {
+    expect(candidate).toBeDefined();
+    if (candidate === undefined) {
+      return;
+    }
+    const decision = new RiskEvaluator({ maxPositionSize: 1n }).evaluate(candidate);
+    expect(decision.approved).toBe(false);
+    expect(decision.reasons).toContain("notional exceeds maximum");
+  });
+
   it("rejects when the position limit is exceeded", () => {
     expect(candidate).toBeDefined();
     if (candidate === undefined) {
@@ -164,6 +187,18 @@ describe("RiskEvaluator", () => {
     }
     const decision = new RiskEvaluator({ maxTokenExposure: 1n }).evaluate(candidate);
     expect(decision.reasons).toContain("missing required data");
+  });
+
+  it("rejects when token exposure is exceeded", () => {
+    expect(candidate).toBeDefined();
+    if (candidate === undefined) {
+      return;
+    }
+    const state = buildWalletState(SYNTHETIC_WATCHED_WALLET, [syntheticBuyActivity]);
+    const decision = new RiskEvaluator({ maxTokenExposure: 1n }).evaluate(candidate, {
+      walletState: state,
+    });
+    expect(decision.reasons).toContain("token exposure exceeded");
   });
 
   it("rejects when wallet exposure is exceeded", () => {
@@ -233,9 +268,13 @@ describe("CopyTradeEngine", () => {
     const signal = engine.process(syntheticBuyActivity);
     expect(signal.status).toBe("approved");
     expect(signal.id).toBe(`${syntheticBuyActivity.transactionHash}:1`);
-    expect(engine.explain(signal)).toContain("APPROVED");
+    expect(engine.explain(signal)).toContain("Detection");
+    expect(engine.explain(signal)).toContain("valid trade");
+    expect(engine.explain(signal)).toContain("Filter");
     expect(engine.explain(signal)).toContain("wallet allowed");
-    expect(engine.explain(signal)).toContain("DISABLED");
+    expect(engine.explain(signal)).toContain("Risk");
+    expect(engine.explain(signal)).toContain("Signal:\nAPPROVED");
+    expect(engine.explain(signal)).toContain("Execution:\nDISABLED");
   });
 
   it("rejects when the filter fails", () => {
@@ -245,6 +284,8 @@ describe("CopyTradeEngine", () => {
     const signal = engine.process(syntheticBuyActivity);
     expect(signal.status).toBe("rejected");
     expect(signal.filterReasons).toContain("token excluded");
+    expect(engine.explain(signal)).toContain("Signal:\nREJECTED");
+    expect(engine.explain(signal)).toContain("Execution:\nDISABLED");
   });
 
   it("refuses live mode and live execution", async () => {

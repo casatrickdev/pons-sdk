@@ -48,6 +48,12 @@ export class CopyTradeEngine {
     this.executionAdapter = config.executionAdapter ?? new NoopExecutionAdapter();
   }
 
+  /**
+   * Evaluate one normalized activity record.
+   *
+   * Historical indexer output and a future real-time stream should both feed
+   * this method with `WalletActivity`. This milestone does not stream events.
+   */
   process(activity: WalletActivityInput): CopyTradeSignal {
     const createdAt = this.now().toISOString();
     const detection = this.detector.detect(activity);

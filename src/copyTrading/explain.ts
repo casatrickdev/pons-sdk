@@ -31,7 +31,7 @@ export function formatCopyTradeExplanation(signal: CopyTradeSignal): string {
     "",
     formatReasons("Risk", signal.riskReasons),
     "",
-    `Result:\n${signal.status.toUpperCase()}`,
+    `Signal:\n${signal.status.toUpperCase()}`,
     "",
     "Execution:\nDISABLED",
   ].join("\n");
