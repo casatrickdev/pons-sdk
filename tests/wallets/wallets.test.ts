@@ -58,6 +58,32 @@ describe("wallet research storage", () => {
     expect(wallets.listWatchedWallets()[0]?.enabled).toBe(false);
   });
 
+  it("adds, enables, disables, and removes a watched wallet", () => {
+    const wallets = repo();
+    wallets.addWallet(SYNTHETIC_WATCHED_WALLET, "alpha");
+    wallets.addWallet(SYNTHETIC_WATCHED_WALLET, "alpha");
+    expect(wallets.listWallets()).toHaveLength(1);
+    expect(wallets.getWallet(SYNTHETIC_WATCHED_WALLET)?.enabled).toBe(true);
+
+    wallets.disableWallet(SYNTHETIC_WATCHED_WALLET);
+    expect(wallets.getWallet(SYNTHETIC_WATCHED_WALLET)?.enabled).toBe(false);
+
+    wallets.enableWallet(SYNTHETIC_WATCHED_WALLET);
+    expect(wallets.getWallet(SYNTHETIC_WATCHED_WALLET)?.enabled).toBe(true);
+
+    wallets.removeWallet(SYNTHETIC_WATCHED_WALLET);
+    expect(wallets.getWallet(SYNTHETIC_WATCHED_WALLET)).toBeUndefined();
+    expect(wallets.listWallets()).toHaveLength(0);
+  });
+
+  it("returns latest synthetic activity in descending block order", () => {
+    const wallets = repo();
+    wallets.insertActivity(syntheticBuyActivity);
+    wallets.insertActivity(syntheticSellActivity);
+    expect(wallets.getLatestActivity(1)[0]?.side).toBe("sell");
+    expect(wallets.getActivityByToken(PONS_REFERENCE.token)).toHaveLength(2);
+  });
+
   it("builds wallet state quantities without inventing pnl", () => {
     const state = buildWalletState(SYNTHETIC_WATCHED_WALLET, [
       syntheticBuyActivity,

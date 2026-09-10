@@ -107,6 +107,16 @@ describe("TradeFilter", () => {
     }
     expect(filter.evaluate(candidate).reasons).toContain("trade above maximum");
   });
+
+  it("rejects a stale signal", () => {
+    const filter = new TradeFilter({ maxSignalAgeSeconds: 10 });
+    const candidate = detector.detect(syntheticBuyActivity).candidate;
+    expect(candidate).toBeDefined();
+    if (candidate === undefined) {
+      return;
+    }
+    expect(filter.evaluate(candidate, 1_700_000_100n).reasons).toContain("stale signal");
+  });
 });
 
 describe("RiskEvaluator", () => {
@@ -155,6 +165,18 @@ describe("RiskEvaluator", () => {
     const decision = new RiskEvaluator({ maxTokenExposure: 1n }).evaluate(candidate);
     expect(decision.reasons).toContain("missing required data");
   });
+
+  it("rejects when wallet exposure is exceeded", () => {
+    expect(candidate).toBeDefined();
+    if (candidate === undefined) {
+      return;
+    }
+    const state = buildWalletState(SYNTHETIC_WATCHED_WALLET, [syntheticBuyActivity]);
+    const decision = new RiskEvaluator({ maxWalletExposure: 1n }).evaluate(candidate, {
+      walletState: state,
+    });
+    expect(decision.reasons).toContain("wallet exposure exceeded");
+  });
 });
 
 describe("SignalBuilder", () => {
@@ -176,6 +198,8 @@ describe("SignalBuilder", () => {
     expect(signal.status).toBe("approved");
     expect(signal.filterReasons).toEqual(["wallet allowed"]);
     expect(signal.riskReasons).toEqual(["exposure within limit"]);
+    expect(signal.blockNumber).toBe(syntheticBuyActivity.blockNumber);
+    expect(signal.pool).toBe(syntheticBuyActivity.pool);
   });
 
   it("builds a rejected signal with reasons", () => {
@@ -211,6 +235,7 @@ describe("CopyTradeEngine", () => {
     expect(signal.id).toBe(`${syntheticBuyActivity.transactionHash}:1`);
     expect(engine.explain(signal)).toContain("APPROVED");
     expect(engine.explain(signal)).toContain("wallet allowed");
+    expect(engine.explain(signal)).toContain("DISABLED");
   });
 
   it("rejects when the filter fails", () => {
@@ -237,11 +262,14 @@ describe("CopyTradeEngine", () => {
 });
 
 describe("NoopExecutionAdapter", () => {
-  it("never executes", async () => {
+  it("never executes or creates a transaction", async () => {
     const engine = new CopyTradeEngine();
     const signal = engine.process(syntheticBuyActivity);
-    await expect(new NoopExecutionAdapter().execute(signal)).resolves.toMatchObject({
-      status: "not_executed",
-    });
+    const result = await new NoopExecutionAdapter().execute(signal);
+
+    expect(result.status).toBe("not_executed");
+    expect(result).not.toHaveProperty("transactionHash");
+    expect(JSON.stringify(result)).not.toMatch(/privateKey|mnemonic|0x[a-fA-F0-9]{64}/);
+    expect(engine.mode).toBe("research");
   });
 });

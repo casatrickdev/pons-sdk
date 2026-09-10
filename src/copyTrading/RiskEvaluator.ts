@@ -1,29 +1,15 @@
-import type { CopyTradePolicy, LayerDecision, RiskContext, TradeCandidate } from "./types.js";
+import type { CopyTradePolicy, RiskContext, RiskDecision, TradeCandidate } from "./types.js";
 import { tradeSize } from "./types.js";
-
-function parseUnixSeconds(timestamp: string | undefined): bigint | undefined {
-  if (timestamp === undefined || timestamp.length === 0) {
-    return undefined;
-  }
-
-  if (/^\d+$/.test(timestamp)) {
-    return BigInt(timestamp);
-  }
-
-  const millis = Date.parse(timestamp);
-  if (Number.isNaN(millis)) {
-    return undefined;
-  }
-  return BigInt(Math.floor(millis / 1000));
-}
+import { parseActivityTimestamp } from "./timestamp.js";
 
 export class RiskEvaluator {
   constructor(private readonly policy: CopyTradePolicy = {}) {}
 
-  evaluate(candidate: TradeCandidate, context: RiskContext = {}): LayerDecision {
+  evaluate(candidate: TradeCandidate, context: RiskContext = {}): RiskDecision {
     const reasons: string[] = [];
     let approved = true;
     const size = tradeSize(candidate);
+    const maxOpen = this.policy.maxConcurrentPositions ?? this.policy.maxOpenPositions;
 
     if (this.policy.maxPositionSize !== undefined) {
       if (size === undefined) {
@@ -37,13 +23,18 @@ export class RiskEvaluator {
       }
     }
 
-    if (this.policy.maxTokenExposure !== undefined || this.policy.maxOpenPositions !== undefined) {
+    const needsState =
+      this.policy.maxTokenExposure !== undefined ||
+      this.policy.maxWalletExposure !== undefined ||
+      maxOpen !== undefined;
+
+    if (needsState) {
       const state = context.walletState;
       if (state === undefined) {
         approved = false;
         reasons.push("missing required data");
       } else {
-        if (this.policy.maxOpenPositions !== undefined) {
+        if (maxOpen !== undefined) {
           const open = state.positions.filter((position) => position.quantity > 0n).length;
           const nextOpen =
             candidate.side === "buy" &&
@@ -52,7 +43,7 @@ export class RiskEvaluator {
             )
               ? open + 1
               : open;
-          if (nextOpen > this.policy.maxOpenPositions) {
+          if (nextOpen > maxOpen) {
             approved = false;
             reasons.push("position limit exceeded");
           }
@@ -75,11 +66,23 @@ export class RiskEvaluator {
             }
           }
         }
+
+        if (this.policy.maxWalletExposure !== undefined) {
+          const current = state.positions.reduce((sum, position) => sum + position.quantity, 0n);
+          const delta =
+            candidate.side === "buy" && candidate.amountToken !== undefined
+              ? candidate.amountToken
+              : 0n;
+          if (current + delta > this.policy.maxWalletExposure) {
+            approved = false;
+            reasons.push("wallet exposure exceeded");
+          }
+        }
       }
     }
 
     if (this.policy.maxSignalAgeSeconds !== undefined) {
-      const eventSeconds = parseUnixSeconds(candidate.timestamp);
+      const eventSeconds = parseActivityTimestamp(candidate.timestamp);
       if (eventSeconds === undefined) {
         approved = false;
         reasons.push("missing required data");

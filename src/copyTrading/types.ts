@@ -21,6 +21,9 @@ export interface LayerDecision {
   reasons: string[];
 }
 
+export type FilterDecision = LayerDecision;
+export type RiskDecision = LayerDecision;
+
 export interface CopyTradeFilterConfig {
   allowedWallets?: readonly string[];
   allowedTokens?: readonly string[];
@@ -28,12 +31,15 @@ export interface CopyTradeFilterConfig {
   excludedTokens?: readonly string[];
   minTradeSize?: bigint;
   maxTradeSize?: bigint;
+  maxSignalAgeSeconds?: number;
 }
 
 export interface CopyTradePolicy {
   maxPositionSize?: bigint;
   maxTokenExposure?: bigint;
+  maxWalletExposure?: bigint;
   maxOpenPositions?: number;
+  maxConcurrentPositions?: number;
   minTradeSize?: bigint;
   maxTradeSize?: bigint;
   allowedWallets?: readonly string[];
@@ -49,9 +55,11 @@ export interface CopyTradeSignal {
   id: string;
   sourceWallet: Address;
   token: Address;
+  pool?: Address;
   side: TradeSide;
   sourceTransaction: Hash;
   sourceLogIndex: bigint;
+  blockNumber: bigint;
   createdAt: string;
   status: CopyTradeSignalStatus;
   detectionReasons: string[];

@@ -89,8 +89,10 @@ export type {
   CopyTradePolicy,
   CopyTradeSignal,
   CopyTradeSignalStatus,
+  FilterDecision,
   LayerDecision,
   RiskContext,
+  RiskDecision,
   TradeCandidate,
   TradeDetection,
 } from "./copyTrading/types.js";

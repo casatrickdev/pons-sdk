@@ -12,7 +12,7 @@ import type { ExecutionAdapter } from "../execution/ExecutionAdapter.js";
 import { NoopExecutionAdapter } from "../execution/NoopExecutionAdapter.js";
 import type { ExecutionResult } from "../execution/types.js";
 
-export const LIVE_EXECUTION_DISABLED = "Live execution is disabled";
+export const LIVE_EXECUTION_DISABLED = "Live execution is disabled in research mode";
 const ZERO_HASH = "0x0000000000000000000000000000000000000000000000000000000000000000" as Hash;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000" as Address;
 
@@ -57,9 +57,14 @@ export class CopyTradeEngine {
         id: copyTradeSignalId(activity.transactionHash ?? ZERO_HASH, activity.logIndex ?? 0n),
         sourceWallet: isAddress(activity.wallet) ? getAddress(activity.wallet) : ZERO_ADDRESS,
         token: isAddress(activity.token) ? getAddress(activity.token) : ZERO_ADDRESS,
+        pool:
+          activity.pool !== undefined && isAddress(activity.pool)
+            ? getAddress(activity.pool)
+            : undefined,
         side: activity.side === "sell" ? "sell" : "buy",
         sourceTransaction: isHash(activity.transactionHash) ? activity.transactionHash : ZERO_HASH,
         sourceLogIndex: activity.logIndex ?? 0n,
+        blockNumber: activity.blockNumber ?? 0n,
         createdAt,
         status: "rejected",
         detectionReasons: detection.reasons,
@@ -69,8 +74,12 @@ export class CopyTradeEngine {
     }
 
     const candidate = detection.candidate;
-    const filterDecision = this.filter.evaluate(candidate);
-    const riskDecision = this.risk.evaluate(candidate, this.riskContext(candidate.wallet));
+    const nowSeconds = BigInt(Math.floor(this.now().getTime() / 1000));
+    const filterDecision = this.filter.evaluate(candidate, nowSeconds);
+    const riskDecision = this.risk.evaluate(
+      candidate,
+      this.riskContext(candidate.wallet, nowSeconds),
+    );
     return this.signals.build(candidate, filterDecision, riskDecision, {
       detectionReasons: detection.reasons,
       createdAt,
@@ -89,8 +98,7 @@ export class CopyTradeEngine {
     return this.executionAdapter.execute(signal);
   }
 
-  private riskContext(wallet: string): RiskContext {
-    const nowSeconds = BigInt(Math.floor(this.now().getTime() / 1000));
+  private riskContext(wallet: string, nowSeconds: bigint): RiskContext {
     if (this.walletState === undefined) {
       return { nowSeconds };
     }

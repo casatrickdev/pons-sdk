@@ -141,6 +141,27 @@ export class WalletRepository {
     return rows.map(toActivity);
   }
 
+  getActivityByToken(
+    token: string,
+    options: Omit<WalletActivityQuery, "token"> = {},
+  ): WalletActivity[] {
+    return this.getActivity({ ...options, token });
+  }
+
+  getLatestActivity(limit: number): WalletActivity[] {
+    const rows = this.database.sqlite
+      .prepare(
+        `
+        SELECT * FROM wallet_activity
+        ORDER BY CAST(block_number AS INTEGER) DESC, CAST(log_index AS INTEGER) DESC
+        LIMIT ?
+        `,
+      )
+      .all(limit) as ActivityRow[];
+
+    return rows.map(toActivity);
+  }
+
   getWallets(): string[] {
     const rows = this.database.sqlite
       .prepare(
@@ -161,7 +182,7 @@ export class WalletRepository {
         INSERT INTO watched_wallets (address, label, enabled, created_at)
         VALUES (@address, @label, 1, @created_at)
         ON CONFLICT(address) DO UPDATE SET
-          label = excluded.label,
+          label = COALESCE(excluded.label, watched_wallets.label),
           enabled = 1
         `,
       )
@@ -172,10 +193,54 @@ export class WalletRepository {
       });
   }
 
+  addWallet(wallet: string, label?: string): void {
+    this.watchWallet(wallet, label);
+  }
+
   unwatchWallet(wallet: string): void {
+    this.disableWallet(wallet);
+  }
+
+  enableWallet(wallet: string): void {
+    const address = requireAddress(wallet, "wallet");
+    const existing = this.getWallet(address);
+    if (existing === undefined) {
+      this.watchWallet(address);
+      return;
+    }
+    this.database.sqlite
+      .prepare("UPDATE watched_wallets SET enabled = 1 WHERE address = ?")
+      .run(address);
+  }
+
+  disableWallet(wallet: string): void {
     this.database.sqlite
       .prepare("UPDATE watched_wallets SET enabled = 0 WHERE address = ?")
       .run(requireAddress(wallet, "wallet"));
+  }
+
+  removeWallet(wallet: string): void {
+    this.database.sqlite
+      .prepare("DELETE FROM watched_wallets WHERE address = ?")
+      .run(requireAddress(wallet, "wallet"));
+  }
+
+  getWallet(wallet: string): WatchedWallet | undefined {
+    const row = this.database.sqlite
+      .prepare("SELECT address, label, enabled FROM watched_wallets WHERE address = ?")
+      .get(requireAddress(wallet, "wallet")) as WatchedRow | undefined;
+    if (row === undefined) {
+      return undefined;
+    }
+    return {
+      address: requireAddress(row.address, "wallet"),
+      label: row.label ?? undefined,
+      enabled: row.enabled === 1,
+    };
+  }
+
+  listWallets(): WatchedWallet[] {
+    return this.listWatchedWallets();
   }
 
   listWatchedWallets(): WatchedWallet[] {

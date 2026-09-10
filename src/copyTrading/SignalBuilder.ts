@@ -13,9 +13,11 @@ export class SignalBuilder {
       id: copyTradeSignalId(candidate.transactionHash, candidate.logIndex),
       sourceWallet: candidate.wallet,
       token: candidate.token,
+      pool: candidate.pool,
       side: candidate.side,
       sourceTransaction: candidate.transactionHash,
       sourceLogIndex: candidate.logIndex,
+      blockNumber: candidate.blockNumber,
       createdAt: options.createdAt ?? new Date().toISOString(),
       status: approved ? "approved" : "rejected",
       detectionReasons: options.detectionReasons ?? [

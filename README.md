@@ -215,9 +215,9 @@ pnpm indexer:latest
 
 ## Copy-Trading Research
 
-This module is currently research-only. It detects and evaluates wallet activity but does not execute trades.
+This module detects and evaluates wallet activity but does not execute trades.
 
-There is no Pons swap indexer yet. The pipeline consumes **normalized** `WalletActivity` objects. Until swap events are indexed, tests use explicitly labeled synthetic domain fixtures plus real token addresses from Robinhood Chain.
+Copy-trade domain logic is tested against **normalized synthetic domain fixtures**. Real Pons wallet/swap ingestion will be connected when the indexer supports those events. Token addresses used in tests can still come from live Robinhood Chain reads.
 
 ```text
 Pons Events
@@ -226,16 +226,20 @@ Indexer
      ↓
 Wallet Activity
      ↓
-Trade Detector
+Trade Detection
      ↓
-Filter
+Filtering
      ↓
 Risk
      ↓
 Copy-Trade Signal
      ↓
-Execution Adapter (disabled)
+Execution Adapter
+        X
+   Disabled
 ```
+
+Research-only: `mode` is `research`. Constructing `live` throws. Signals use a deterministic id (`transactionHash + logIndex`). Filtering and risk are separate deterministic layers. No private keys. No live execution. `engine.execute()` throws `Live execution is disabled in research mode`. `NoopExecutionAdapter` returns `not_executed`.
 
 ```ts
 import { CopyTradeEngine } from "pons-sdk";
@@ -252,20 +256,16 @@ const signal = engine.process(activity);
 console.log(engine.explain(signal));
 ```
 
-`mode` is `research` only. Constructing `live` throws. `engine.execute()` always throws `Live execution is disabled`. `NoopExecutionAdapter` returns `not_executed`.
-
-Signals use a deterministic id: `transactionHash + logIndex`.
-
 ## Robinhood copy trading bot, sniper bot, and bundler
 
 This repo is the open-source foundation for Robinhood Chain trading tools:
 
-| Tool | Status |
-| ---- | ------ |
-| Robinhood copy trading bot | Research pipeline only. Detects and scores wallet activity. Does not copy trades. |
-| Robinhood sniper bot | Not implemented. Planned after swap indexing and a real-time event stream. |
-| Robinhood bundler | Not implemented. Planned after paper execution. |
-| Other Robinhood trading tools | Launch indexer and read-only SDK are available now. |
+| Tool                          | Status                                                                            |
+| ----------------------------- | --------------------------------------------------------------------------------- |
+| Robinhood copy trading bot    | Research pipeline only. Detects and scores wallet activity. Does not copy trades. |
+| Robinhood sniper bot          | Not implemented. Planned after swap indexing and a real-time event stream.        |
+| Robinhood bundler             | Not implemented. Planned after paper execution.                                   |
+| Other Robinhood trading tools | Launch indexer and read-only SDK are available now.                               |
 
 Live copy-trading, sniping, bundling, and fund execution are disabled. There is no environment flag that turns them on.
 
@@ -276,24 +276,28 @@ Real trading is not implemented. If it is added later, do not use the public Rob
 ```text
 [x] Robinhood Chain client
 [x] Pons V1/V2 contracts
+[x] Contract reads
 [x] TokenLaunched decoding
-[x] Historical launch queries
+[x] Launch queries
+[x] SDK tests
+[x] Live RPC tests
 
-[x] Historical launch indexer
-[x] Persistent launch state
-[x] Copy-trading domain architecture
+[x] Historical indexer
+[x] Persistent indexed state
+[x] Copy-trading research architecture
 [x] Read-only signal pipeline
 
 [ ] Real-time event stream
-[ ] Swap indexing
-[ ] Wallet activity indexer
+[ ] Wallet activity indexing
 [ ] Wallet intelligence
 [ ] Copy-trading backtesting
 [ ] Paper execution
-[ ] Real execution
+[ ] Live execution
+[ ] Scanner
 [ ] Bundler
 [ ] Sniper
-[ ] Scanner
+[ ] Additional Robinhood Chain launchpads
+[ ] Swap indexing
 ```
 
 ## Development

@@ -1,6 +1,7 @@
 import { getAddress } from "viem";
-import type { CopyTradeFilterConfig, LayerDecision, TradeCandidate } from "./types.js";
+import type { CopyTradeFilterConfig, FilterDecision, TradeCandidate } from "./types.js";
 import { tradeSize } from "./types.js";
+import { parseActivityTimestamp } from "./timestamp.js";
 
 function addressSet(values: readonly string[] | undefined): Set<string> | undefined {
   if (values === undefined) {
@@ -12,7 +13,7 @@ function addressSet(values: readonly string[] | undefined): Set<string> | undefi
 export class TradeFilter {
   constructor(private readonly config: CopyTradeFilterConfig = {}) {}
 
-  evaluate(candidate: TradeCandidate): LayerDecision {
+  evaluate(candidate: TradeCandidate, nowSeconds?: bigint): FilterDecision {
     const reasons: string[] = [];
     let approved = true;
 
@@ -65,6 +66,23 @@ export class TradeFilter {
           reasons.push("trade above maximum");
         } else {
           reasons.push("trade size valid");
+        }
+      }
+    }
+
+    if (this.config.maxSignalAgeSeconds !== undefined) {
+      const eventSeconds = parseActivityTimestamp(candidate.timestamp);
+      if (eventSeconds === undefined) {
+        approved = false;
+        reasons.push("missing timestamp");
+      } else {
+        const now = nowSeconds ?? BigInt(Math.floor(Date.now() / 1000));
+        const age = now > eventSeconds ? now - eventSeconds : 0n;
+        if (age > BigInt(this.config.maxSignalAgeSeconds)) {
+          approved = false;
+          reasons.push("stale signal");
+        } else {
+          reasons.push("signal is fresh");
         }
       }
     }
